@@ -17,10 +17,10 @@ firebase.initializeApp(config);
 // var database = ...
 var database = firebase.database();
 
-var trainName = "RichTrain";
-var destination = "Atlanta";
-var trainStart = "10:00"
-var frequency = 15;
+// var trainName = "RichTrain";
+// var destination = "Atlanta";
+// var trainStart = "10:00"
+// var frequency = 15;
 
 // Whenever a user clicks the submit button, we add the record into the database.
 $("#add-train-btn").on("click", function(event) {
@@ -31,10 +31,30 @@ $("#add-train-btn").on("click", function(event) {
   var trainStart = moment($("#start-input").val().trim(), "hh:mm").format("hh:mm");
   var frequency = parseInt($("#frequency-input").val().trim());
 
-      // console.log ("trainName : " + trainName);
-      // console.log("Destination: " + destination);
-      // console.log("Start: " + trainStart);
-      // console.log("Frequency: " + frequency);
+      console.log ("trainName : " + trainName);
+      console.log(typeof trainName);
+      console.log("Destination: " + destination);
+      console.log(typeof destination);
+      console.log("Start: " + trainStart);
+      console.log(typeof trainStart);
+      console.log("Frequency: " + frequency);
+      console.log(typeof frequency);
+
+  // Adding some form/input validations
+  if (trainName.length == 0 || destination.length == 0 || trainStart.length == 0) {
+      alert("All fields must be filled out");
+      return; 
+  };  
+
+  if (trainStart == "Invalid date") {
+    alert("Please input a valid First Train Time(HH:mm - military time).");
+    return; 
+  };  
+
+  if (isNaN(frequency) || frequency < 1) {
+    alert("Please input a valid frequency (min).");
+    return; 
+  };  
 
   database.ref().push({
     ftrainName: trainName,
@@ -43,7 +63,14 @@ $("#add-train-btn").on("click", function(event) {
     ffrequency: frequency
   });
 
-    //console.log("push success!");
+  // Alert user that data has been successfully added into the Database.
+  alert("Train Schedule added!");
+
+  // Clear the form
+  $("#train-name-input").val("");
+  $("#destination-input").val("");
+  $("#start-input").val("");
+  $("#frequency-input").val(0);
       
 });
 
@@ -88,7 +115,8 @@ database.ref().on("child_added", function(childSnapshot, prevChildkey) {
   // Next Train
   var nextTrain = moment().add(tMinutesTillTrain, "minutes");
   // console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
-  nextTrain = moment(nextTrain).format("hh:mm");
+  // nextTrain = moment(nextTrain).format("hh:mm");
+  nextTrain = moment(nextTrain).format("LT");
 
   // Add each train's data and display the info in the table
   $("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" +
