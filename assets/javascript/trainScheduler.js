@@ -2,94 +2,101 @@
 // Make sure that your configuration matches your firebase script version
 
  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyBzFSRQxvW3qimlhJqp5zDZ2d_4bRvIcDM",
-    authDomain: "employee-time-sheet-e495c.firebaseapp.com",
-    databaseURL: "https://employee-time-sheet-e495c.firebaseio.com",
-    projectId: "employee-time-sheet-e495c",
-    storageBucket: "employee-time-sheet-e495c.appspot.com",
-    messagingSenderId: "407524840032"
-  };
-  firebase.initializeApp(config);
+
+var config = {
+  apiKey: "AIzaSyB_br14_idfL-dAmM0Jw9_tddwYcTUJ7TI",
+  authDomain: "train-scheduler-cfd7e.firebaseapp.com",
+  databaseURL: "https://train-scheduler-cfd7e.firebaseio.com",
+  projectId: "train-scheduler-cfd7e",
+  storageBucket: "train-scheduler-cfd7e.appspot.com",
+  messagingSenderId: "851125449790"
+};
+
+firebase.initializeApp(config);
 
 // var database = ...
 var database = firebase.database();
 
+var trainName = "RichTrain";
+var destination = "Atlanta";
+var trainStart = "10:00"
+var frequency = 15;
 
- 
+// Whenever a user clicks the submit button, we add the record into the database.
+$("#add-train-btn").on("click", function(event) {
+  event.preventDefault();
 
-// We are now inside our .on function...    
-// Console.log the "snapshot" value (a point-in-time representation of the database)
-// This "snapshot" allows the page to get the most current values in firebase.
-// Change the value of our clickCounter to match the value in the database
-// ___________ = snapshot.val().______________________
-// Console Log the value of the clickCounter
-// Change the HTML using jQuery to reflect the updated clickCounter value
-// Then include Firebase error logging
-// HINT: }, function(errorObject)
-// --------------------------------------------------------------
-// Whenever a user clicks the click button
-  $("#add-train-btn").on("click", function(event) {
-    event.preventDefault();
+  var trainName = $("#train-name-input").val().trim();
+  var destination = $("#destination-input").val().trim();
+  var trainStart = moment($("#start-input").val().trim(), "hh:mm").format("hh:mm");
+  var frequency = parseInt($("#frequency-input").val().trim());
 
-    var  trainName = $("#train-name-input").val().trim();
-    var destination = $("#detination-input").val().trim();
-    var trainStart = moment($("#start-input").val().trim(), "DD/MM/YY").format("X");
-    var frequency = parseInt($("#frequency-input").val().trim());
+      // console.log ("trainName : " + trainName);
+      // console.log("Destination: " + destination);
+      // console.log("Start: " + trainStart);
+      // console.log("Frequency: " + frequency);
 
-      console.log ("trainName : " + trainName);
-      console.log("Destination: " + destination);
-      console.log("Start: " + trainStart);
-      console.log("Frequency: " + frequency);
-
-    database.ref().push({
-   //       clickCount: clickCounter
-      ftrainName: trainName,
-      fdestination: destination,
-      ftrainStart: trainStart,
-      ffrequency: frequency
-      });
-      
+  database.ref().push({
+    ftrainName: trainName,
+    fdestination: destination,
+    ftrainStart: trainStart,
+    ffrequency: frequency
   });
 
-  database.ref().on("child_added", function(childSnapshot, prevChildkey) {
+    //console.log("push success!");
+      
+});
 
-    // Then we console.log the value of snapshot
-    console.log("childSnapshot:" + childSnapshot.val());
+// Get snapshot of Database when a record is added (child_added).
+database.ref().on("child_added", function(childSnapshot, prevChildkey) {
 
-    console.log(childSnapshot.val());
+    // Use console.log to see the value of snapshot
+    // console.log("childSnapshot:" + childSnapshot.val());
 
     // Store everything into a variable.
-    var trainName = childSnapshot.val().ftrainName;
-    var destination = childSnapshot.val().fdestination;
-    var trainStart = childSnapshot.val().ftrainStart;
-    var frequency = childSnapshot.val().ffrequency;
+  var trainName = childSnapshot.val().ftrainName;
+  var destination = childSnapshot.val().fdestination;
+  var trainStart = childSnapshot.val().ftrainStart;
+  var frequency = childSnapshot.val().ffrequency;
 
-    // Train Info
-    console.log(trainName);
-    console.log(destination);
-    console.log(trainStart);
-    console.log(frequency);
+    // Train Info that is read from the databse
+    // console.log("trainName: " + trainName);
+    // console.log("destination: " + destination);
+    // console.log("trainStart: " + trainStart);
+    // console.log("frequency: " + frequency);
 
-    // Prettify the train start
-    var trainStartPretty = moment.unix(trainStart).format("MM/DD/YY");
+    // First Time (pushed back 1 year to make sure it comes before current time)
+  var trainStartConverted = moment(trainStart, "hh:mm").subtract(1, "years");
+  // console.log("trainStartConverted: " + trainStartConverted);
 
-    // Calculate the months worked using hardcore math
-    // To calculate the months worked
-    var empMonths = moment().diff(moment.unix(empStart, "X"), "months");
-    console.log(empMonths);
+    // Current Time
+  var currentTime = moment();
+  // console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
 
-    // Calculate the total billed frequency
-    var empBilled = empMonths * empRate;
-    console.log(empBilled);
+  // Difference between the times
+  var diffTime = moment().diff(moment(trainStartConverted), "minutes");
+  // console.log("DIFFERENCE IN TIME: " + diffTime);
 
-    // Add each train's data into the table
-    $("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" +
-    trainStartPretty + "</td><td>" + trainMonths + "</td><td>" + frequency + "</td><td>" + empBilled + "</td></tr>");
+  // Time apart (remainder)
+  var tRemainder = diffTime % frequency;
+  // console.log("tRemainder is " + tRemainder);
+
+  // Minute Until Train
+  var tMinutesTillTrain = frequency - tRemainder;
+  // console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+  // Next Train
+  var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+  // console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+  nextTrain = moment(nextTrain).format("hh:mm");
+
+  // Add each train's data and display the info in the table
+  $("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" +
+     frequency + "</td><td>" + nextTrain + "</td><td>" + tMinutesTillTrain + "</td><tr>");
   
-    }, function(errorObject) {
+  }, function(errorObject) {
 
       // In case of error this will print the error
       console.log("The read failed: " + errorObject.code);
-    });
+});
 
