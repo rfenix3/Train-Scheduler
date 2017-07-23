@@ -5,6 +5,7 @@
     	<title>Train Tracker</title>
     	<!-- Bootstrap -->
     	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <link rel="stylesheet" href="./assets/css/trainScheduler.css">
     	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     	<!-- Firebase Reference -->
@@ -13,78 +14,101 @@
     	<script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>	
 
 	</head>
-  	<body>
+  <body>
     <!-- Bullet Train Tracker -->
     <div class="container">
       <!-- Jumbotron -->
     	<div class="jumbotron" style="background-color: black; color: white">
         	<h2 class="text-center">Georgia Tech Bullet Train</h2>
         	<p class="text-center">Atlanta's first high-speed train in North America. Travel safely and rapidly to your destination within USA.</p>
-      	</div>
-      	<div class="row">
+      </div>
 
-    		<div class="col-lg-4">
-        		<!-- Add Train  -->
-          		<div class="panel panel-primary">
-            		<div class="panel-heading">
-              			<h3 class="panel-title"><strong>Add Train</strong></h3>
-            		</div>
-            		<div class="panel-body">
-              		<!-- Entry Form -->
-              			<form>
-             		   		<div class="form-group">
-                  				<label for="train-name-input">Train Name</label>
-                  				<input class="form-control" id="train-name-input" type="text">
-                			</div>
-                			<div class="form-group">
-                  				<label for="role-input">Destination</label>
-                  				<input class="form-control" id="destination-input" type="text">
-                			</div>
-                			<div class="form-group">
-                  				<label for="start-input">First Train Time (HH:mm - military time)</label>
-                  				<input class="form-control" id="start-input" type="text">
-                			</div>
-                			<div class="form-group">
-                  				<label for="rate-input">Frequency (min)</label>
-                  				<input class="form-control" id="frequency-input" type="text">
-                			</div>
-                			<button class="btn btn-primary" id="add-train-btn" type="submit">Submit</button>
-              			</form>
-            		</div>
-          		</div>
-        	</div>
+		  <!-- <div class="image">
+		      <img src="./assets/images/bulletTrain.png" alt="">
+		      <h2>
+		      	<span>"Georgia Tech Bullet Train"
+		      		<span class="spacer">&nbsp;</span>
+		      		<br>
+		      		<span class="spacer">&nbsp;</span>
+		      		"Atlanta's first high-speed train in North America.""
+		      	</span>
+		      </h2>
+		  </div> -->
 
-        	<div class="col-lg-8 ">
-          		<div class="panel panel-primary">
-            		<div class="panel-heading">
-              			<h3 class="panel-title"><strong>Current Train Schedule</strong></h3>
-            		</div>
-            		<div class="panel-body">
-              			<table class="table table-hover" id='train-table'>
-                			<thead>
-                  				<tr>
-                    				<th>Train Name</th>
-                    				<th>Destination</th>
-                    				<th>Frequency (min)</th>
-                    				<th>Next Arrival</th>
-                    				<th>Minutes Away</th>
-                  				</tr>
-                			</thead>
-                			<tbody>
-                			</tbody>
-              			</table>
-            		</div>
-          		</div>
-        	</div>
-    
+      <div class="row">
 
-  		</div>
+    	  <div class="col-lg-4">
+        	<!-- Add Train  -->
+          <div class="panel panel-primary">
+          	<div class="panel-heading">
+          		<h3 class="panel-title"><strong>Add Train</strong></h3>
+          	</div>
+          	<div class="panel-body">
+           		<!-- Entry Form -->
+          		<form>
+             		<div class="form-group">
+           				<label for="train-name-input">Train Name</label>
+             				<input class="form-control" id="train-name-input" type="text">
+               	</div>
+                <div class="form-group">
+                	<label for="role-input">Destination</label>
+                	<input class="form-control" id="destination-input" type="text">
+                </div>
+                <div class="form-group">
+                	<label for="start-input">First Train Time (HH:mm - military time)</label>
+                	<input class="form-control" id="start-input" type="text">
+                </div>
+                <div class="form-group">
+                	<label for="rate-input">Frequency (min)</label>
+                	<input class="form-control" id="frequency-input" type="text">
+                </div>
+                <button class="btn btn-primary" id="add-train-btn" type="submit">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
 
-		<div class="panel-footer text-center"> &copy;Copyright 2017, Richard Fenix
-      	</div>
+        <div class="col-lg-8 ">
+        	<div class="panel panel-primary">
+         		<div class="panel-heading">
+         			<h3 class="panel-title"><strong>Current Train Schedule</strong></h3>
+          	</div>
+            <div class="panel-body">
+          		<table class="table table-hover" id='train-table'>
+            		<thead>
+            			<tr>
+             				<th>Train Name</th>
+             				<th>Destination</th>
+             				<th>Frequency (min)</th>
+             				<th>Next Arrival</th>
+             				<th>Minutes Away</th>
+            			</tr>
+            		</thead>
+            		<tbody>
+            		</tbody>
+            	</table>
+            </div>
+          </div>
+        </div>
+    	</div>
 
+		  <div class="panel-footer text-center"> &copy;Copyright 2017, Richard Fenix
+      </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+    <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p> Do you want to update or delete this row? </p>
+        <button class="btn btn-primary" id="cancel-train-btn" type="cancel">Cancel</button>
+        <button class="btn btn-danger" id="delete-train-btn" type="delete">Delete</button>
+      </div>
 
     </div>
+
     <!-- JavaScript -->
     <script src="./assets/javascript/trainScheduler.js"></script>
   </body>

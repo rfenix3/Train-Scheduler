@@ -71,22 +71,27 @@ $("#add-train-btn").on("click", function(event) {
   $("#destination-input").val("");
   $("#start-input").val("");
   $("#frequency-input").val(0);
-      
+
+  $(".train-row").empty();      
 });
 
+function refreshTable(){
 // Get snapshot of Database when a record is added (child_added).
 database.ref().on("child_added", function(childSnapshot, prevChildkey) {
 
     // Use console.log to see the value of snapshot
-    // console.log("childSnapshot:" + childSnapshot.val());
+    console.log("childSnapshot: " + childSnapshot.val());
+    console.log("prevChildkey: " + prevChildkey );
 
     // Store everything into a variable.
+  var childKey = childSnapshot.key;
   var trainName = childSnapshot.val().ftrainName;
   var destination = childSnapshot.val().fdestination;
   var trainStart = childSnapshot.val().ftrainStart;
   var frequency = childSnapshot.val().ffrequency;
 
     // Train Info that is read from the databse
+     console.log("childKey: " + childKey);
     // console.log("trainName: " + trainName);
     // console.log("destination: " + destination);
     // console.log("trainStart: " + trainStart);
@@ -119,7 +124,7 @@ database.ref().on("child_added", function(childSnapshot, prevChildkey) {
   nextTrain = moment(nextTrain).format("LT");
 
   // Add each train's data and display the info in the table
-  $("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" +
+  $("#train-table > tbody").append("<tr id=\"myRow\" class=\"train-row\" data-key=" + childKey + "><td>" + trainName + "</td><td>" + destination + "</td><td>" +
      frequency + "</td><td>" + nextTrain + "</td><td>" + tMinutesTillTrain + "</td><tr>");
   
   }, function(errorObject) {
@@ -127,4 +132,75 @@ database.ref().on("child_added", function(childSnapshot, prevChildkey) {
       // In case of error this will print the error
       console.log("The read failed: " + errorObject.code);
 });
+};
+
+// function updateDelete(){
+//   var key = this.getAttribute("data-key");
+//   if (confirm("Do you want to delete this row?") == true) {
+//     console.log("You pressed OK!");
+//     console.log(key);
+//     database.ref(key).remove();
+//     $(".train-row").empty();
+//     refreshTable();
+//   } else {
+//     alert("You pressed Cancel!");
+//     return;
+//   }
+// };
+
+function updateDelete(){
+  //event.preventDefault();
+
+  // get the firebase key for the clicked row
+  var key = this.getAttribute("data-key");
+  // Get the modal
+  var modal = document.getElementById('myModal');
+
+  // Get the row that opens the modal
+  //var row = document.getElementById("myRow");
+
+  var deleteBtn = document.getElementById("delete-train-btn");
+  var cancelBtn = document.getElementById("cancel-train-btn");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // open the modal 
+  modal.style.display = "block";
+
+  // When the user clicks on delete, delete the row and close the modal
+  deleteBtn.onclick = function() {
+    if (confirm("Are you sure you want to delete this row?") == true) {
+      console.log("firebase db key: " + key)
+      database.ref(key).remove();
+      alert("Train data deleted!");
+      modal.style.display = "none";
+      $(".train-row").empty();
+      refreshTable();
+    } else {
+      return;
+    }
+  };
+
+  cancelBtn.onclick = function() {
+    modal.style.display = "none";
+  };
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function() {
+    modal.style.display = "none";
+  };
+
+    // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+  }
+};
+
+
+$(document).on("click", ".train-row", updateDelete);
+
+refreshTable();
 
