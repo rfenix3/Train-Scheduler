@@ -1,3 +1,4 @@
+// Updating to ensure latest file can be uploaded in github
 // Initialize Firebase (YOUR OWN APP)
 // Make sure that your configuration matches your firebase script version
 
